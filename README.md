@@ -1,2 +1,2 @@
 # chash
-A simple object hash written in c
+A simple hash written in c
