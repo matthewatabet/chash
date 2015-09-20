@@ -88,12 +88,33 @@ void testHashSet() {
 
 }
 
+
+void testHashGet() {
+    struct hashTable * hash = newCHash(3);
+    hashSet(hash, "A", "apple", sizeof("apple"));
+    hashSet(hash, "B", "bunny", sizeof("bunny"));
+    hashSet(hash, "C", "cobbler", sizeof("cobbler"));
+    hashSet(hash, "D", "dawn", sizeof("dawn"));
+    hashSet(hash, "E", "eagle", sizeof("eagle"));
+    expect("A is for apple",
+           strcmp((char *)hashGet(hash, "A"), "apple") == 0);
+    expect("B is for bunny",
+           strcmp((char *)hashGet(hash, "B"), "bunny") == 0);
+    expect("C is for cobbler",
+           strcmp((char *)hashGet(hash, "C"), "cobbler") == 0);
+    expect("D is for dawn",
+           strcmp((char *)hashGet(hash, "D"), "dawn") == 0);
+    expect("E is for eagle",
+           strcmp((char *)hashGet(hash, "E"), "eagle") == 0);
+}
+
 int main() {
     printf("Running tests...\n");
     testNewChash();
     testNewHashEntry();
     testHashKey();
     testHashSet();
+    testHashGet();
     printf("Ran %d tests. %d failed.\n", tests, fails);
     return 0;
 }

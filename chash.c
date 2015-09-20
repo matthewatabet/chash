@@ -115,3 +115,30 @@ void hashSet(struct hashTable * hash, char * key, void * value, int size) {
         }
     }
 }
+
+/*
+ * Retrieve a value from a hash table given a string key.
+ */
+
+void * hashGet(struct hashTable * hash, char * key) {
+    
+    int hashed_key;
+    hashed_key = hashKey(key, hash -> size);
+
+    struct hashEntry * curr;
+    curr = hash -> table[hashed_key];
+
+    while (curr != NULL && strcmp(key, curr -> key) > 0) {
+        curr = curr -> next;
+    }
+
+    if (curr == NULL) {
+        return NULL;
+    }
+    else if (strcmp(curr -> key, key) == 0) {
+        return curr -> value;
+    }
+    else {
+        return NULL;
+    }
+}

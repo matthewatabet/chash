@@ -17,7 +17,7 @@ int hashKey(char * key, int size);
 struct hashTable * newCHash(int size);
 struct hashEntry * newHashEntry(char * key, void * value, int size);
 void hashSet(struct hashTable * hash, char * key, void * value, int size);
-void * hashGet(char * key);
+void * hashGet(struct hashTable * hash, char * key);
 
 
 #endif // CHASH_H
