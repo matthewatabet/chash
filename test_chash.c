@@ -1,5 +1,6 @@
 #include <stdlib.h>
 #include <stdio.h>
+#include <string.h>
 #include <chash.h>
 
 static int tests = 0, fails = 0;
@@ -10,12 +11,21 @@ static int tests = 0, fails = 0;
 #define expect(_s, _c) { test(_s); test_cond(_c); }
 
 void testNewChash() { 
-    struct hashTable * hash = newCHash(12);
-    expect("Hash table size is 12.", hash->size == 12);
+    struct hashTable * hash = newCHash(4);
+    expect("Hash table size is 4.", hash->size == 4);
     int i;
-    for (i =0; i < 12; i++) {
+    for (i =0; i < 4; i++) {
         expect("Hash entry is NULL.", hash -> table[i] == NULL);
     }
+}
+
+void testNewHashEntry() {
+    char * name = "darci";
+    struct hashEntry * entry = newHashEntry("name", name, sizeof(name));
+    expect("New hashEntry has corect value set.",
+           strcmp(entry -> value, name) == 0);
+    expect("New hashEntry value has been copied.", name != entry -> value);
+    expect("New entry has next set to NULL.", entry->next == NULL);
 }
 
 void testHashKey() {
@@ -25,10 +35,65 @@ void testHashKey() {
     expect("Hash of 'dog', 13 is 11.", hashKey("dog", 13) == 11);
 }
 
+void testHashSet() {
+    struct hashTable * hash = newCHash(1);
+    
+    // test inserting new into new bucket.
+    char * bunny = "Bunny";
+    hashSet(hash, "B", bunny, sizeof(bunny));
+    int hashId;
+    hashId = hashKey("B", hash -> size);
+    expect("New element has key 'B'.",
+           strcmp(hash -> table[hashId] -> key, "B") == 0);
+    expect("New element has value 'Bunnu'",
+           strcmp(hash -> table[hashId] -> value, bunny) == 0);
+
+    // test inserting at beginning of existing bucket.
+    char * apple = "Apple";
+    hashSet(hash, "A", apple, sizeof(apple));
+    hashId = hashKey("A", hash -> size);
+    expect("Insert at beginning of bucket.",
+           strcmp(hash -> table[hashId] -> value, apple) == 0);
+    expect("Previous element now at end of bucket.",
+           strcmp(hash -> table[hashId] -> next -> value, bunny) == 0);
+
+    // test inserting at end of existing bucket.
+    char * cobbler = "cobbler";
+    hashSet(hash, "C", cobbler, sizeof(cobbler));
+    hashId = hashKey("C", hash -> size);
+    expect("Insert at end of bucket.",
+           strcmp(hash -> table[hashId] -> next -> next -> value,
+                  cobbler) == 0);
+
+    // update existing key
+    char * carrot = "carrot";
+    hashSet(hash, "C", "carrot", sizeof(carrot));
+    expect("Updated existing key.",
+           strcmp(hash -> table[hashId] -> next -> next -> value,
+                  carrot) == 0);
+
+    // set keys into different buckets.
+    struct hashTable * hash_2 = newCHash(2);
+    int hashIdA;
+    int hashIdB;
+    hashIdA = hashKey("A", hash_2 -> size);
+    hashIdB = hashKey("B", hash_2 -> size);
+    expect("Hashes are different", hashIdA != hashIdB);
+    hashSet(hash_2, "A", apple, sizeof(apple));
+    hashSet(hash_2, "B", bunny, sizeof(bunny));
+    expect("A maps to apple.",
+           strcmp(hash_2 -> table[hashIdA] -> value, apple) == 0);
+    expect("B maps to bunny.",
+           strcmp(hash_2 -> table[hashIdB] -> value, bunny) == 0);
+
+}
+
 int main() {
     printf("Running tests...\n");
     testNewChash();
+    testNewHashEntry();
     testHashKey();
+    testHashSet();
     printf("Ran %d tests. %d failed.\n", tests, fails);
     return 0;
 }
