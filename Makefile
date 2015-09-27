@@ -9,5 +9,8 @@ OBJ = chash.o test_chash.o
 test_chash: $(OBJ)
 	$(CC) -o $@ $^ $(CFLAGS)
 
+test : 
+	./test_chash
+
 clean:
 	rm -f *.o
